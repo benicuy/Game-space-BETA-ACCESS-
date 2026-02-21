@@ -1,0 +1,22 @@
+{
+    "name": "Game Booster Pro",
+    "short_name": "Game Booster",
+    "description": "Boost game performance & launcher untuk FF, ML, PUBG, dll",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#0a0c1a",
+    "theme_color": "#4a6cf7",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
