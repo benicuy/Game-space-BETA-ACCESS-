@@ -14,21 +14,21 @@ const GAMES = [
         package: "com.dts.freefireth",
         uri: "freefire://",
         category: "Battle Royale",
-        image: ""
+        image: "https://cdn.phototourl.com/uploads/2026-02-21-ce1166c2-20b6-430d-ba2e-54efd3da5f90.jpg"
     },
     {
         name: "Free Fire MAX",
         package: "com.dts.freefiremax",
         uri: "freefiremax://",
         category: "Battle Royale",
-        image: ""
+        image: "https://cdn.phototourl.com/uploads/2026-02-21-d5e46ba6-f9a1-4c90-b077-c38839f97db2.jpg"
     },
     {
         name: "PUBG Mobile",
         package: "com.tencent.ig",
         uri: "pubgm://",
         category: "Battle Royale",
-        image: ""
+        image: "https://cdn.phototourl.com/uploads/2026-02-21-13d9676d-caaf-46d2-b2a0-659a55cbfafa.jpg"
     },
     {
         name: "Genshin Impact",
