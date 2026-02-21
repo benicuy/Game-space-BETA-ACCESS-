@@ -12,6 +12,8 @@ body {
     justify-content: center;
     align-items: center;
     padding: 12px;
+    position: relative;
+    overflow-x: hidden;
 }
 
 .app-container {
@@ -25,6 +27,7 @@ body {
     color: white;
     position: relative;
     min-height: 700px;
+    z-index: 1;
 }
 
 /* Header */
@@ -74,6 +77,28 @@ body {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     cursor: pointer;
+}
+
+/* Floating Toggle */
+.floating-toggle {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(74, 108, 247, 0.2);
+}
+
+.toggle-icon {
+    font-size: 20px;
+}
+
+.toggle-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 /* Performance Card */
@@ -347,6 +372,7 @@ input:checked + .slider:before {
     border-radius: 40px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 10;
 }
 
 .nav-item {
@@ -371,6 +397,116 @@ input:checked + .slider:before {
     font-size: 20px;
 }
 
+/* ===== FLOATING WINDOW STYLES ===== */
+.floating-window {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 180px;
+    background: rgba(26, 31, 53, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    border: 1px solid rgba(74, 108, 247, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(74, 108, 247, 0.3);
+    z-index: 1000;
+    color: white;
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: move;
+    user-select: none;
+    touch-action: none;
+}
+
+.floating-window.minimized {
+    height: 40px;
+    overflow: hidden;
+}
+
+.floating-window.minimized .floating-content {
+    display: none;
+}
+
+.floating-header {
+    padding: 10px 12px;
+    background: rgba(74, 108, 247, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: move;
+}
+
+.floating-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a6cf7;
+}
+
+.floating-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.minimize-btn, .close-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.minimize-btn:hover, .close-btn:hover {
+    background: rgba(74, 108, 247, 0.5);
+}
+
+.floating-content {
+    padding: 12px;
+}
+
+.floating-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 11px;
+    border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+    padding-bottom: 4px;
+}
+
+.float-label {
+    color: #8f9bb3;
+}
+
+.float-value {
+    color: #4a6cf7;
+    font-weight: 600;
+}
+
+.floating-glow {
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, #4a6cf7, #ff6b6b);
+    border-radius: 3px;
+    margin-top: 8px;
+    transition: width 0.3s;
+}
+
+.floating-drag-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    cursor: move;
+    z-index: 1001;
+    opacity: 0;
+}
+
 /* Modal */
 .modal {
     display: none;
@@ -381,7 +517,7 @@ input:checked + .slider:before {
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(5px);
-    z-index: 1000;
+    z-index: 2000;
     align-items: center;
     justify-content: center;
 }
