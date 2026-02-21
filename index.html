@@ -3,155 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Booster - Floating Stats</title>
+    <title>Game Booster</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div class="app-container">
+    <div class="app">
         <!-- Header -->
         <div class="header">
-            <div class="logo-area">
-                <div class="logo-icon">⚡</div>
+            <div class="logo">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%234a6cf7'/%3E%3Ctext x='8' y='28' fill='white' font-size='24' font-weight='bold'%3E⚡%3C/text%3E%3C/svg%3E" alt="logo" class="logo-img">
                 <div>
-                    <h1 class="title">Game Booster Pro</h1>
-                    <p class="subtitle" id="deviceStatus">Mendeteksi device...</p>
+                    <h1>Game Booster</h1>
+                    <span class="device-model" id="deviceModel">Android Device</span>
                 </div>
             </div>
-            <div class="menu-icon" id="menuBtn">⋮</div>
+            <button class="menu-btn" id="menuBtn">⋮</button>
         </div>
 
-        <!-- Floating Window Toggle -->
-        <div class="floating-toggle" id="floatingToggle">
-            <span class="toggle-icon">📊</span>
-            <span class="toggle-text">Floating Stats</span>
-            <label class="switch small">
-                <input type="checkbox" id="enableFloating">
+        <!-- Permission Card -->
+        <div class="permission-card" id="permissionCard">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Ccircle cx='22' cy='22' r='20' fill='%234a6cf7' opacity='0.2'/%3E%3Ctext x='10' y='30' fill='%234a6cf7' font-size='24'%3E🔓%3C/text%3E%3C/svg%3E" alt="permission">
+            <div class="perm-text">
+                <strong>Aktifkan Floating Window</strong>
+                <small>Untuk lihat stats saat main game</small>
+            </div>
+            <button class="perm-btn" id="requestPermBtn">IZINKAN</button>
+        </div>
+
+        <!-- Boost Panel -->
+        <div class="boost-panel">
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-label">RAM</span>
+                    <span class="stat-value" id="ramValue">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">CPU</span>
+                    <span class="stat-value" id="cpuValue">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">SUHU</span>
+                    <span class="stat-value" id="tempValue">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">FPS</span>
+                    <span class="stat-value" id="fpsValue">60</span>
+                </div>
+            </div>
+            <button class="boost-btn" id="boostBtn">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext x='0' y='16' fill='white' font-size='16'%3E🚀%3C/text%3E%3C/svg%3E" alt="boost">
+                <span>BOOST PERFORMANCE</span>
+            </button>
+        </div>
+
+        <!-- Floating Toggle -->
+        <div class="toggle-row">
+            <div class="toggle-label">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ctext x='0' y='20' fill='white' font-size='20'%3E📊%3C/text%3E%3C/svg%3E" alt="stats">
+                <span>Floating Stats Overlay</span>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="floatingToggle" disabled>
                 <span class="slider"></span>
             </label>
         </div>
 
-        <!-- Performance Card -->
-        <div class="performance-card">
-            <div class="performance-header">
-                <span>⚡ Performance Mode</span>
-                <label class="switch">
-                    <input type="checkbox" id="boostToggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="performance-stats">
-                <div class="stat">
-                    <span class="stat-label">RAM Bebas</span>
-                    <span class="stat-value" id="freeRam">--</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">CPU</span>
-                    <span class="stat-value" id="cpuUsage">--</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">Suhu</span>
-                    <span class="stat-value" id="temperature">--</span>
-                </div>
-            </div>
-            <button class="boost-btn" id="quickBoostBtn">
-                <span class="btn-icon">🚀</span>
-                <span class="btn-text">BOOST NOW</span>
-            </button>
-        </div>
-
-        <!-- Game Grid Section -->
+        <!-- ===== GAME LIST DENGAN GAMBAR ===== -->
         <div class="game-section">
             <div class="section-header">
-                <h3>🎮 Game Terinstall</h3>
+                <h2>🎮 GAME KAMU</h2>
                 <span class="game-count" id="gameCount">0 game</span>
             </div>
             
             <div class="game-grid" id="gameGrid">
-                <div class="loading-games">Memindai game...</div>
+                <!-- Game akan diisi oleh JavaScript -->
             </div>
         </div>
 
-        <!-- Features -->
-        <div class="features-card">
-            <div class="feature-item">
-                <div class="feature-icon">🔕</div>
-                <div class="feature-text">
-                    <span>Mode DND</span>
-                    <small>Blok notifikasi saat main</small>
-                </div>
-                <label class="switch small">
-                    <input type="checkbox" id="dndMode">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">📱</div>
-                <div class="feature-text">
-                    <span>Clear Memory</span>
-                    <small>Bersihkan RAM otomatis</small>
-                </div>
-                <label class="switch small">
-                    <input type="checkbox" id="autoClear" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
+        <!-- Recent Games -->
+        <div class="recent-section">
+            <h3>⏱️ BARU DIMAINKAN</h3>
+            <div class="recent-horizontal" id="recentGames"></div>
         </div>
 
-        <!-- Bottom Navigation -->
+        <!-- Bottom Nav -->
         <div class="bottom-nav">
-            <div class="nav-item active" data-tab="games">
-                <span class="nav-icon">🎮</span>
+            <div class="nav-item active" data-page="home">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext x='0' y='16' fill='%234a6cf7' font-size='16'%3E🏠%3C/text%3E%3C/svg%3E" alt="home">
+                <span>Home</span>
+            </div>
+            <div class="nav-item" data-page="games">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext x='0' y='16' fill='%238f9bb3' font-size='16'%3E🎮%3C/text%3E%3C/svg%3E" alt="games">
                 <span>Games</span>
             </div>
-            <div class="nav-item" data-tab="boost">
-                <span class="nav-icon">⚡</span>
-                <span>Boost</span>
-            </div>
-            <div class="nav-item" data-tab="settings">
-                <span class="nav-icon">⚙️</span>
-                <span>Settings</span>
+            <div class="nav-item" data-page="stats">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext x='0' y='16' fill='%238f9bb3' font-size='16'%3E📊%3C/text%3E%3C/svg%3E" alt="stats">
+                <span>Stats</span>
             </div>
         </div>
     </div>
 
-    <!-- ===== FLOATING WINDOW STATS ===== -->
+    <!-- Floating Window -->
     <div class="floating-window" id="floatingWindow">
-        <div class="floating-header">
-            <span class="floating-title">📊 System Stats</span>
-            <div class="floating-controls">
-                <span class="minimize-btn" id="minimizeFloating">−</span>
-                <span class="close-btn" id="closeFloating">×</span>
+        <div class="floating-header" id="dragHandle">
+            <span>⚡ GAME BOOSTER</span>
+            <div>
+                <button class="float-btn" id="minimizeFloat">−</button>
+                <button class="float-btn" id="closeFloat">×</button>
             </div>
         </div>
-        <div class="floating-content">
-            <div class="floating-stat">
-                <span class="float-label">🧠 RAM:</span>
-                <span class="float-value" id="floatRam">--</span>
+        <div class="floating-body">
+            <button class="float-boost" id="floatBoostBtn">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Ctext x='0' y='14' fill='white' font-size='14'%3E🚀%3C/text%3E%3C/svg%3E" alt="boost">
+                <span>QUICK BOOST</span>
+            </button>
+            <div class="float-stats">
+                <div><span>RAM:</span> <span id="floatRam">--</span></div>
+                <div><span>CPU:</span> <span id="floatCpu">--</span></div>
+                <div><span>SUHU:</span> <span id="floatTemp">--</span></div>
+                <div><span>FPS:</span> <span id="floatFps">60</span></div>
             </div>
-            <div class="floating-stat">
-                <span class="float-label">⚙️ CPU:</span>
-                <span class="float-value" id="floatCpu">--</span>
-            </div>
-            <div class="floating-stat">
-                <span class="float-label">🌡️ Suhu:</span>
-                <span class="float-value" id="floatTemp">--</span>
-            </div>
-            <div class="floating-stat">
-                <span class="float-label">🔋 Baterai:</span>
-                <span class="float-value" id="floatBattery">--</span>
-            </div>
-            <div class="floating-stat">
-                <span class="float-label">📶 Jaringan:</span>
-                <span class="float-value" id="floatNetwork">--</span>
-            </div>
-            <div class="floating-stat">
-                <span class="float-label">🎮 FPS:</span>
-                <span class="float-value" id="floatFps">60</span>
-            </div>
-            <div class="floating-glow" id="floatGlow"></div>
+            <div class="float-game" id="floatGameName">🎮 Game: -</div>
         </div>
-        <div class="floating-drag-area" id="dragArea"></div>
     </div>
 
     <!-- Menu Modal -->
@@ -159,31 +132,27 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Menu</h3>
-                <span class="close-modal">&times;</span>
+                <button class="modal-close" id="closeMenu">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="menu-item" id="scanGames">
-                    <span class="menu-icon">🔄</span>
+                <button class="modal-item" id="rescanBtn">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext x='0' y='16' fill='white' font-size='16'%3E🔄%3C/text%3E%3C/svg%3E" alt="scan">
                     <span>Scan Ulang Game</span>
-                </div>
-                <div class="menu-item" id="clearAllCache">
-                    <span class="menu-icon">🗑️</span>
-                    <span>Bersihkan Cache</span>
-                </div>
-                <div class="menu-item" id="resetFloating">
-                    <span class="menu-icon">🪟</span>
+                </button>
+                <button class="modal-item" id="checkPermBtn">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext x='0' y='16' fill='white' font-size='16'%3E🔓%3C/text%3E%3C/svg%3E" alt="perm">
+                    <span>Cek Izin Floating</span>
+                </button>
+                <button class="modal-item" id="resetFloatBtn">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext x='0' y='16' fill='white' font-size='16'%3E🪟%3C/text%3E%3C/svg%3E" alt="reset">
                     <span>Reset Posisi Floating</span>
-                </div>
-                <div class="menu-item" id="aboutApp">
-                    <span class="menu-icon">ℹ️</span>
-                    <span>Tentang Aplikasi</span>
-                </div>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div class="notification" id="notification"></div>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
     <script src="script.js"></script>
 </body>
