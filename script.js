@@ -7,7 +7,7 @@ const GAMES = [
         package: "com.mobile.legends",
         uri: "mobilelegends://",
         category: "MOBA",
-        image: "" // Kosong, nanti diisi manual
+        image: "https://cdn.phototourl.com/uploads/2026-02-21-02b3be08-4390-4005-acd8-13780cbc4210.jpg" // Kosong, nanti diisi manual
     },
     {
         name: "Free Fire",
@@ -84,7 +84,7 @@ const GAMES = [
         package: "com.mobile.legends.advance",
         uri: "mladvance://",
         category: "RPG",
-        image: ""
+        image: "https://cdn.phototourl.com/uploads/2026-02-21-010159ad-00a6-4141-b15f-d3dcf428fef7.jpg"
     }
 ];
 
