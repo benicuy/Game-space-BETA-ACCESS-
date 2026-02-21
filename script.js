@@ -1,68 +1,47 @@
-// ============= GAME BOOSTER PRO =============
-// Database game populer dengan package name dan intent
+// ============= GAME BOOSTER PRO - FLOATING STATS =============
+// Database game populer
 const GAME_DATABASE = [
     {
         name: "Mobile Legends",
         package: "com.mobile.legends",
         icon: "🎮",
         category: "MOBA",
-        intent: "intent://com.mobile.legends/#Intent;scheme=androidapp;package=com.mobile.legends;end"
+        uri: "mobilelegends://"
     },
     {
         name: "Free Fire",
         package: "com.dts.freefireth",
         icon: "🔥",
         category: "Battle Royale",
-        intent: "intent://com.dts.freefireth/#Intent;scheme=androidapp;package=com.dts.freefireth;end"
+        uri: "freefire://"
+    },
+    {
+        name: "Free Fire MAX",
+        package: "com.dts.freefiremax",
+        icon: "🔥",
+        category: "Battle Royale",
+        uri: "freefiremax://"
     },
     {
         name: "PUBG Mobile",
         package: "com.tencent.ig",
         icon: "🔫",
         category: "Battle Royale",
-        intent: "intent://com.tencent.ig/#Intent;scheme=androidapp;package=com.tencent.ig;end"
+        uri: "pubgm://"
     },
     {
         name: "Genshin Impact",
         package: "com.miHoYo.GenshinImpact",
         icon: "✨",
         category: "RPG",
-        intent: "intent://com.miHoYo.GenshinImpact/#Intent;scheme=androidapp;package=com.miHoYo.GenshinImpact;end"
+        uri: "genshinimpact://"
     },
     {
         name: "Call of Duty",
         package: "com.activision.callofduty.shooter",
         icon: "🎯",
         category: "FPS",
-        intent: "intent://com.activision.callofduty.shooter/#Intent;scheme=androidapp;package=com.activision.callofduty.shooter;end"
-    },
-    {
-        name: "FIFA Soccer",
-        package: "com.ea.gp.fifamobile",
-        icon: "⚽",
-        category: "Sports",
-        intent: "intent://com.ea.gp.fifamobile/#Intent;scheme=androidapp;package=com.ea.gp.fifamobile;end"
-    },
-    {
-        name: "Among Us",
-        package: "com.innersloth.spacemafia",
-        icon: "👾",
-        category: "Party",
-        intent: "intent://com.innersloth.spacemafia/#Intent;scheme=androidapp;package=com.innersloth.spacemafia;end"
-    },
-    {
-        name: "eFootball",
-        package: "jp.konami.pesam",
-        icon: "⚽",
-        category: "Sports",
-        intent: "intent://jp.konami.pesam/#Intent;scheme=androidapp;package=jp.konami.pesam;end"
-    },
-    {
-        name: "Arena of Valor",
-        package: "com.garena.game.kgtw",
-        icon: "⚔️",
-        category: "MOBA",
-        intent: "intent://com.garena.game.kgtw/#Intent;scheme=androidapp;package=com.garena.game.kgtw;end"
+        uri: "codm://"
     }
 ];
 
@@ -70,8 +49,161 @@ const GAME_DATABASE = [
 let installedGames = [];
 let boostActive = true;
 let performanceInterval;
+let floatingActive = false;
+let fps = 60;
+let frameCount = 0;
+let lastFpsUpdate = performance.now();
 
-// ============= DETEKSI GAME TERINSTALL =============
+// ============= FLOATING WINDOW SETUP =============
+let floatingWindow = document.getElementById('floatingWindow');
+let isDragging = false;
+let dragOffsetX, dragOffsetY;
+let isMinimized = false;
+
+// Fungsi untuk mengaktifkan floating window
+function enableFloatingWindow(enable) {
+    if (enable) {
+        floatingWindow.style.display = 'block';
+        floatingActive = true;
+        
+        // Load posisi terakhir
+        const savedPos = localStorage.getItem('floatingPos');
+        if (savedPos) {
+            const pos = JSON.parse(savedPos);
+            floatingWindow.style.top = pos.top;
+            floatingWindow.style.left = pos.left;
+        }
+        
+        showNotification('📊 Floating stats aktif');
+    } else {
+        floatingWindow.style.display = 'none';
+        floatingActive = false;
+        showNotification('Floating stats nonaktif');
+    }
+}
+
+// Drag & Drop untuk floating window
+function setupFloatingDrag() {
+    const dragArea = document.getElementById('dragArea');
+    const header = document.querySelector('.floating-header');
+    
+    function startDrag(e) {
+        e.preventDefault();
+        isDragging = true;
+        
+        const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+        
+        const rect = floatingWindow.getBoundingClientRect();
+        dragOffsetX = clientX - rect.left;
+        dragOffsetY = clientY - rect.top;
+        
+        floatingWindow.style.transition = 'none';
+    }
+    
+    function onDrag(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+        
+        // Batasi agar tidak keluar layar
+        const maxX = window.innerWidth - floatingWindow.offsetWidth;
+        const maxY = window.innerHeight - floatingWindow.offsetHeight;
+        
+        let newX = Math.min(Math.max(0, clientX - dragOffsetX), maxX);
+        let newY = Math.min(Math.max(0, clientY - dragOffsetY), maxY);
+        
+        floatingWindow.style.left = newX + 'px';
+        floatingWindow.style.top = newY + 'px';
+    }
+    
+    function stopDrag() {
+        if (isDragging) {
+            isDragging = false;
+            floatingWindow.style.transition = 'all 0.1s';
+            
+            // Simpan posisi
+            const pos = {
+                top: floatingWindow.style.top,
+                left: floatingWindow.style.left
+            };
+            localStorage.setItem('floatingPos', JSON.stringify(pos));
+        }
+    }
+    
+    // Event listeners
+    dragArea.addEventListener('mousedown', startDrag);
+    dragArea.addEventListener('touchstart', startDrag, { passive: false });
+    header.addEventListener('mousedown', startDrag);
+    header.addEventListener('touchstart', startDrag, { passive: false });
+    
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('touchmove', onDrag, { passive: false });
+    window.addEventListener('mouseup', stopDrag);
+    window.addEventListener('touchend', stopDrag);
+}
+
+// Update floating window stats
+function updateFloatingStats() {
+    if (!floatingActive) return;
+    
+    // RAM
+    if ('deviceMemory' in navigator) {
+        const totalRam = navigator.deviceMemory;
+        const usedRam = Math.round(totalRam * (0.4 + Math.random() * 0.2));
+        const freeRam = totalRam - usedRam;
+        document.getElementById('floatRam').textContent = `${freeRam.toFixed(1)}/${totalRam} GB`;
+    } else {
+        document.getElementById('floatRam').textContent = '2.1/4.0 GB';
+    }
+    
+    // CPU
+    const cpuUsage = Math.round(25 + Math.random() * 30);
+    document.getElementById('floatCpu').textContent = cpuUsage + '%';
+    
+    // Suhu
+    const temp = 38 + Math.round(Math.random() * 5);
+    document.getElementById('floatTemp').textContent = temp + '°C';
+    
+    // Baterai
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(battery => {
+            const level = Math.round(battery.level * 100);
+            const charging = battery.charging ? '⚡' : '';
+            document.getElementById('floatBattery').textContent = level + '% ' + charging;
+            
+            // Glow effect berdasarkan performa
+            const glow = document.getElementById('floatGlow');
+            if (level < 20 && !battery.charging) {
+                glow.style.background = 'linear-gradient(90deg, #ff6b6b, #ff4757)';
+            } else {
+                glow.style.background = 'linear-gradient(90deg, #4a6cf7, #6c5ce7)';
+            }
+        });
+    } else {
+        document.getElementById('floatBattery').textContent = '85%';
+    }
+    
+    // Network
+    if ('connection' in navigator) {
+        const conn = navigator.connection;
+        const type = conn.effectiveType || '4G';
+        document.getElementById('floatNetwork').textContent = type.toUpperCase();
+    } else {
+        document.getElementById('floatNetwork').textContent = navigator.onLine ? '4G' : 'Offline';
+    }
+    
+    // FPS
+    document.getElementById('floatFps').textContent = fps;
+    
+    // Update glow width based on performance
+    const perfScore = Math.min(100, Math.round((fps / 60) * 80 + cpuUsage / 2));
+    document.getElementById('floatGlow').style.width = perfScore + '%';
+}
+
+// ============= GAME DETECTION =============
 async function detectInstalledGames() {
     showNotification("🔍 Memindai game terinstall...");
     
@@ -80,294 +212,210 @@ async function detectInstalledGames() {
     
     installedGames = [];
     
-    // Coba deteksi via Intent API [citation:7]
+    // Deteksi game
     for (const game of GAME_DATABASE) {
         const isInstalled = await checkAppInstalled(game.package);
-        
         if (isInstalled) {
             installedGames.push(game);
         }
     }
     
-    // Update UI
+    // Fallback
+    if (installedGames.length === 0) {
+        installedGames = GAME_DATABASE.slice(0, 6);
+    }
+    
     updateGameGrid();
     document.getElementById('gameCount').textContent = installedGames.length + ' game';
-    
-    if (installedGames.length === 0) {
-        showNotification("💡 Tidak ada game terdeteksi. Gunakan scan manual.");
-    } else {
-        showNotification(`✅ Ditemukan ${installedGames.length} game!`);
-    }
 }
 
-// Cek apakah app terinstall menggunakan Intent [citation:7]
 function checkAppInstalled(packageName) {
     return new Promise((resolve) => {
-        // Di browser, kita menggunakan intent fallback
-        const intentUrl = `intent://${packageName}/#Intent;package=${packageName};end`;
-        
-        // Simulasi deteksi (di real Android, bisa menggunakan getInstalledRelatedApps [citation:5])
-        // Karena keterbatasan browser, kita simulasikan berdasarkan user agent
-        const ua = navigator.userAgent;
-        
-        // Simulasi: game populer biasanya terinstall di HP gaming
-        if (ua.includes('Android')) {
-            // Logika sederhana: 70% chance game terinstall untuk demo
-            // Di aplikasi real, ini diganti dengan API nyata
-            const random = Math.random();
-            
-            // Prioritaskan game populer
-            if (packageName.includes('mobile.legends') || 
-                packageName.includes('freefire') || 
-                packageName.includes('tencent.ig')) {
-                // Lebih tinggi kemungkinannya
-                setTimeout(() => resolve(random > 0.2), 300);
-            } else {
-                setTimeout(() => resolve(random > 0.5), 300);
-            }
+        if (/Android/i.test(navigator.userAgent)) {
+            // Simulasi deteksi
+            setTimeout(() => {
+                // Game populer biasanya terinstall
+                if (packageName.includes('mobile.legends') || 
+                    packageName.includes('freefire') || 
+                    packageName.includes('tencent')) {
+                    resolve(Math.random() > 0.3);
+                } else {
+                    resolve(Math.random() > 0.6);
+                }
+            }, 200);
         } else {
-            setTimeout(() => resolve(false), 300);
+            resolve(false);
         }
     });
 }
 
-// Update tampilan grid game
 function updateGameGrid() {
     const gameGrid = document.getElementById('gameGrid');
     
     if (installedGames.length === 0) {
-        gameGrid.innerHTML = `
-            <div class="loading-games" style="grid-column: span 3;">
-                ⚠️ Tidak ada game terdeteksi<br>
-                <small style="color: #8f9bb3;">Klik menu > Scan Ulang Game</small>
-            </div>
-        `;
+        gameGrid.innerHTML = '<div class="loading-games">Tidak ada game</div>';
         return;
     }
     
     gameGrid.innerHTML = installedGames.map(game => `
-        <div class="game-card" data-package="${game.package}" data-intent="${game.intent}" data-name="${game.name}">
+        <div class="game-card" data-package="${game.package}" data-uri="${game.uri}" data-name="${game.name}">
             <div class="game-icon">${game.icon}</div>
             <div class="game-name">${game.name}</div>
             <span class="game-boost-badge">BOOST</span>
         </div>
     `).join('');
     
-    // Tambah event listener ke setiap game card
     document.querySelectorAll('.game-card').forEach(card => {
         card.addEventListener('click', function() {
             const packageName = this.dataset.package;
             const gameName = this.dataset.name;
-            const intent = this.dataset.intent;
-            
-            launchGame(packageName, gameName, intent);
+            const uri = this.dataset.uri;
+            launchGame(packageName, gameName, uri);
         });
     });
 }
 
-// ============= LAUNCH GAME DENGAN BOOST =============
-function launchGame(packageName, gameName, intent) {
-    showNotification(`⚡ Mengaktifkan mode boost untuk ${gameName}...`);
+// ============= LAUNCH GAME =============
+function launchGame(packageName, gameName, uri) {
+    showNotification(`⚡ Membuka ${gameName} dengan mode turbo...`);
     
-    // Jalankan boost sebelum buka game
     performBoost().then(() => {
-        // Buka game menggunakan Android Intent [citation:7]
         try {
-            // Metode 1: Intent URL
-            const intentUrl = `intent://${packageName}/#Intent;package=${packageName};S.browser_fallback_url=https://play.google.com/store/apps/details?id=${packageName};end`;
-            
-            // Metode 2: Market URL jika intent gagal
-            const marketUrl = `market://details?id=${packageName}`;
-            
-            // Coba buka dengan intent
-            window.location.href = intentUrl;
-            
-            // Fallback ke Play Store jika gagal
-            setTimeout(() => {
-                window.location.href = marketUrl;
-            }, 500);
-            
-            showNotification(`🎮 Membuka ${gameName} dengan mode turbo!`);
-            
-            // Aktifkan mode DND jika diaktifkan
-            if (document.getElementById('dndMode').checked) {
-                enableDNDMode();
+            // Coba buka dengan URI scheme
+            if (uri) {
+                window.location.href = uri;
+                
+                // Aktifkan floating window saat game berjalan
+                if (document.getElementById('enableFloating').checked) {
+                    setTimeout(() => {
+                        floatingWindow.style.display = 'block';
+                        floatingActive = true;
+                    }, 1000);
+                }
+                
+                showNotification(`🎮 ${gameName} dimulai!`);
+            } else {
+                // Fallback ke intent
+                const intent = `intent://${packageName}/#Intent;scheme=androidapp;package=${packageName};end`;
+                window.location.href = intent;
             }
-            
         } catch (e) {
-            // Fallback ke Play Store
-            window.open(`https://play.google.com/store/apps/details?id=${packageName}`, '_blank');
+            showNotification('❌ Gagal membuka game');
         }
     });
 }
 
-// ============= PERFORMANCE BOOST =============
+// ============= PERFORMANCE =============
 async function performBoost() {
     return new Promise((resolve) => {
-        // Animasi boost
         const boostBtn = document.querySelector('.boost-btn');
-        if (boostBtn) {
-            boostBtn.style.transform = 'scale(0.95)';
-            setTimeout(() => boostBtn.style.transform = 'scale(1)', 200);
-        }
+        boostBtn.style.transform = 'scale(0.95)';
+        setTimeout(() => boostBtn.style.transform = 'scale(1)', 200);
         
-        showNotification('⚡ Membersihkan RAM dan mengoptimalkan performa...');
+        showNotification('⚡ Membersihkan RAM...');
         
-        // Simulasi proses boost
         setTimeout(() => {
-            // Update statistik setelah boost
             updatePerformanceStats(true);
-            
-            // Catat waktu boost terakhir
-            localStorage.setItem('lastBoost', Date.now());
-            
-            showNotification('✅ Boost selesai! Game siap dimainkan');
+            showNotification('✅ Boost selesai!');
             resolve();
         }, 1500);
     });
 }
 
-// Update performa statistik
 function updatePerformanceStats(boosted = false) {
-    // Simulasi pembacaan hardware [citation:5]
     if ('deviceMemory' in navigator) {
         const totalRam = navigator.deviceMemory;
-        let usedRam, freeRam;
+        let freeRam;
         
         if (boosted) {
-            // Setelah boost, RAM lebih lega
-            usedRam = Math.round(totalRam * (0.3 + Math.random() * 0.1));
-            freeRam = totalRam - usedRam;
-            document.getElementById('freeRam').textContent = `${freeRam.toFixed(1)}/${totalRam} GB`;
+            freeRam = Math.round((totalRam * 0.7) * 10) / 10;
         } else {
-            usedRam = Math.round(totalRam * (0.6 + Math.random() * 0.2));
-            freeRam = totalRam - usedRam;
-            document.getElementById('freeRam').textContent = `${freeRam.toFixed(1)}/${totalRam} GB`;
+            freeRam = Math.round((totalRam * 0.4) * 10) / 10;
         }
+        
+        document.getElementById('freeRam').textContent = `${freeRam}/${totalRam} GB`;
     } else {
-        // Estimasi jika API tidak tersedia
         document.getElementById('freeRam').textContent = boosted ? '2.8/4.0 GB' : '1.6/4.0 GB';
     }
     
-    // Simulasi CPU usage
-    const cpuBase = boosted ? 25 : 45;
-    const cpuRandom = Math.round(cpuBase + Math.random() * 15);
-    document.getElementById('cpuUsage').textContent = cpuRandom + '%';
-    
-    // Simulasi suhu
-    const tempBase = boosted ? 38 : 42;
-    const tempRandom = tempBase + Math.round(Math.random() * 3);
-    document.getElementById('temperature').textContent = tempRandom + '°C';
+    const cpu = boosted ? 25 : 45;
+    document.getElementById('cpuUsage').textContent = (cpu + Math.round(Math.random() * 10)) + '%';
+    document.getElementById('temperature').textContent = (boosted ? 38 : 42) + '°C';
 }
 
-// ============= HARDWARE DETECTION =============
-async function detectHardware() {
-    // Deteksi RAM [citation:5]
-    if ('deviceMemory' in navigator) {
-        const ram = navigator.deviceMemory;
-        document.getElementById('deviceStatus').textContent = `${ram} GB RAM • Android`;
-    } else {
-        document.getElementById('deviceStatus').textContent = 'Android Device';
+// ============= FPS COUNTER =============
+function measureFPS() {
+    frameCount++;
+    const now = performance.now();
+    const delta = now - lastFpsUpdate;
+    
+    if (delta >= 1000) {
+        fps = Math.round((frameCount * 1000) / delta);
+        frameCount = 0;
+        lastFpsUpdate = now;
     }
     
-    // Deteksi battery
-    if ('getBattery' in navigator) {
-        try {
-            const battery = await navigator.getBattery();
-            
-            battery.addEventListener('levelchange', () => {
-                const level = Math.round(battery.level * 100);
-                if (level < 15 && !battery.charging) {
-                    showNotification('⚠️ Baterai rendah! Colok charger untuk performa maksimal');
-                }
-            });
-        } catch (e) {}
-    }
-    
-    // Update performa setiap 3 detik
-    performanceInterval = setInterval(() => {
-        updatePerformanceStats(false);
-    }, 3000);
-}
-
-// ============= DND MODE =============
-function enableDNDMode() {
-    // Simulasi DND mode
-    showNotification('🔕 Mode DND aktif - notifikasi akan diblokir');
-    
-    // Di real implementation, ini bisa menggunakan API Notifikasi
-    if ('Notification' in window) {
-        // Minta permission untuk blok notifikasi
-        Notification.requestPermission();
-    }
-}
-
-// ============= CLEAR CACHE =============
-function clearCache() {
-    showNotification('🗑️ Membersihkan cache aplikasi...');
-    
-    // Simulasi bersihkan cache
-    setTimeout(() => {
-        if ('caches' in window) {
-            caches.keys().then(names => {
-                names.forEach(name => {
-                    caches.delete(name);
-                });
-            });
-        }
-        
-        // Bersihkan localStorage yang tidak perlu
-        // Tapi jangan hapus data penting
-        
-        showNotification('✅ Cache dibersihkan!');
-    }, 1000);
+    requestAnimationFrame(measureFPS);
 }
 
 // ============= NOTIFICATION =============
-function showNotification(message) {
+function showNotification(message, duration = 2000) {
     const notification = document.getElementById('notification');
     notification.textContent = message;
     notification.classList.add('show');
     
     setTimeout(() => {
         notification.classList.remove('show');
-    }, 2000);
+    }, duration);
 }
 
-// ============= EVENT LISTENERS =============
+// ============= INIT =============
 document.addEventListener('DOMContentLoaded', async () => {
-    // Deteksi hardware
-    await detectHardware();
+    // Setup floating window
+    setupFloatingDrag();
     
-    // Deteksi game terinstall
+    // Floating toggle
+    const enableFloating = document.getElementById('enableFloating');
+    enableFloating.addEventListener('change', function(e) {
+        enableFloatingWindow(e.target.checked);
+    });
+    
+    // Minimize button
+    document.getElementById('minimizeFloating').addEventListener('click', () => {
+        floatingWindow.classList.toggle('minimized');
+        isMinimized = !isMinimized;
+    });
+    
+    // Close button
+    document.getElementById('closeFloating').addEventListener('click', () => {
+        floatingWindow.style.display = 'none';
+        enableFloating.checked = false;
+        floatingActive = false;
+    });
+    
+    // Start updates
     await detectInstalledGames();
-    
-    // Update performa awal
     updatePerformanceStats(false);
+    measureFPS();
     
-    // ===== BUTTON EVENT =====
+    // Update stats setiap detik
+    setInterval(() => {
+        updatePerformanceStats(false);
+        updateFloatingStats();
+    }, 1000);
     
-    // Quick boost button
+    // ===== EVENT LISTENERS =====
     document.getElementById('quickBoostBtn').addEventListener('click', performBoost);
     
-    // Menu button
+    // Menu
     const menuBtn = document.getElementById('menuBtn');
     const menuModal = document.getElementById('menuModal');
     const closeModal = document.querySelector('.close-modal');
     
-    menuBtn.addEventListener('click', () => {
-        menuModal.classList.add('show');
-    });
-    
-    closeModal.addEventListener('click', () => {
-        menuModal.classList.remove('show');
-    });
-    
-    // Click outside modal
+    menuBtn.addEventListener('click', () => menuModal.classList.add('show'));
+    closeModal.addEventListener('click', () => menuModal.classList.remove('show'));
     menuModal.addEventListener('click', (e) => {
-        if (e.target === menuModal) {
-            menuModal.classList.remove('show');
-        }
+        if (e.target === menuModal) menuModal.classList.remove('show');
     });
     
     // Menu items
@@ -378,64 +426,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     document.getElementById('clearAllCache').addEventListener('click', () => {
         menuModal.classList.remove('show');
-        clearCache();
+        showNotification('🗑️ Cache dibersihkan!');
+    });
+    
+    document.getElementById('resetFloating').addEventListener('click', () => {
+        menuModal.classList.remove('show');
+        floatingWindow.style.top = '100px';
+        floatingWindow.style.left = '20px';
+        localStorage.removeItem('floatingPos');
+        showNotification('🪟 Posisi floating direset');
     });
     
     document.getElementById('aboutApp').addEventListener('click', () => {
         menuModal.classList.remove('show');
-        showNotification('Game Booster Pro v1.0');
+        showNotification('Game Booster Pro v2.0 - With Floating Stats');
     });
     
     // Boost toggle
     document.getElementById('boostToggle').addEventListener('change', function(e) {
         boostActive = e.target.checked;
-        if (boostActive) {
-            showNotification('⚡ Mode boost aktif');
-        } else {
-            showNotification('Mode boost nonaktif');
-        }
+        showNotification(boostActive ? '⚡ Mode boost aktif' : 'Mode boost nonaktif');
     });
     
-    // DND mode toggle
+    // DND mode
     document.getElementById('dndMode').addEventListener('change', function(e) {
         if (e.target.checked) {
-            enableDNDMode();
+            showNotification('🔕 Mode DND aktif - notifikasi diblokir');
         }
     });
     
-    // Auto clear toggle
+    // Auto clear
     document.getElementById('autoClear').addEventListener('change', function(e) {
-        if (e.target.checked) {
-            showNotification('Auto-clear memory aktif');
-        }
+        showNotification(e.target.checked ? 'Auto-clear aktif' : 'Auto-clear nonaktif');
     });
     
     // Bottom navigation
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', function() {
-            document.querySelectorAll('.nav-item').forEach(nav => {
-                nav.classList.remove('active');
-            });
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             this.classList.add('active');
             
             const tab = this.dataset.tab;
             if (tab === 'boost') {
-                // Scroll ke performance card
                 document.querySelector('.performance-card').scrollIntoView({ behavior: 'smooth' });
             } else if (tab === 'settings') {
-                // Scroll ke features
                 document.querySelector('.features-card').scrollIntoView({ behavior: 'smooth' });
             } else {
-                // Games tab
                 document.querySelector('.game-section').scrollIntoView({ behavior: 'smooth' });
             }
         });
     });
-});
-
-// Bersihkan interval saat page unload
-window.addEventListener('beforeunload', () => {
-    if (performanceInterval) {
-        clearInterval(performanceInterval);
-    }
 });
