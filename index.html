@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Booster - Game Launcher</title>
+    <title>Game Booster - Floating Stats</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header dengan Status -->
+        <!-- Header -->
         <div class="header">
             <div class="logo-area">
                 <div class="logo-icon">⚡</div>
@@ -21,7 +21,17 @@
             <div class="menu-icon" id="menuBtn">⋮</div>
         </div>
 
-        <!-- Performance Meter -->
+        <!-- Floating Window Toggle -->
+        <div class="floating-toggle" id="floatingToggle">
+            <span class="toggle-icon">📊</span>
+            <span class="toggle-text">Floating Stats</span>
+            <label class="switch small">
+                <input type="checkbox" id="enableFloating">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- Performance Card -->
         <div class="performance-card">
             <div class="performance-header">
                 <span>⚡ Performance Mode</span>
@@ -58,12 +68,11 @@
             </div>
             
             <div class="game-grid" id="gameGrid">
-                <!-- Game items akan diisi oleh JavaScript -->
                 <div class="loading-games">Memindai game...</div>
             </div>
         </div>
 
-        <!-- Fitur Booster -->
+        <!-- Features -->
         <div class="features-card">
             <div class="feature-item">
                 <div class="feature-icon">🔕</div>
@@ -106,6 +115,45 @@
         </div>
     </div>
 
+    <!-- ===== FLOATING WINDOW STATS ===== -->
+    <div class="floating-window" id="floatingWindow">
+        <div class="floating-header">
+            <span class="floating-title">📊 System Stats</span>
+            <div class="floating-controls">
+                <span class="minimize-btn" id="minimizeFloating">−</span>
+                <span class="close-btn" id="closeFloating">×</span>
+            </div>
+        </div>
+        <div class="floating-content">
+            <div class="floating-stat">
+                <span class="float-label">🧠 RAM:</span>
+                <span class="float-value" id="floatRam">--</span>
+            </div>
+            <div class="floating-stat">
+                <span class="float-label">⚙️ CPU:</span>
+                <span class="float-value" id="floatCpu">--</span>
+            </div>
+            <div class="floating-stat">
+                <span class="float-label">🌡️ Suhu:</span>
+                <span class="float-value" id="floatTemp">--</span>
+            </div>
+            <div class="floating-stat">
+                <span class="float-label">🔋 Baterai:</span>
+                <span class="float-value" id="floatBattery">--</span>
+            </div>
+            <div class="floating-stat">
+                <span class="float-label">📶 Jaringan:</span>
+                <span class="float-value" id="floatNetwork">--</span>
+            </div>
+            <div class="floating-stat">
+                <span class="float-label">🎮 FPS:</span>
+                <span class="float-value" id="floatFps">60</span>
+            </div>
+            <div class="floating-glow" id="floatGlow"></div>
+        </div>
+        <div class="floating-drag-area" id="dragArea"></div>
+    </div>
+
     <!-- Menu Modal -->
     <div class="modal" id="menuModal">
         <div class="modal-content">
@@ -122,6 +170,10 @@
                     <span class="menu-icon">🗑️</span>
                     <span>Bersihkan Cache</span>
                 </div>
+                <div class="menu-item" id="resetFloating">
+                    <span class="menu-icon">🪟</span>
+                    <span>Reset Posisi Floating</span>
+                </div>
                 <div class="menu-item" id="aboutApp">
                     <span class="menu-icon">ℹ️</span>
                     <span>Tentang Aplikasi</span>
@@ -135,4 +187,4 @@
 
     <script src="script.js"></script>
 </body>
-  </html>
+        </html>
