@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game Booster - Game Launcher</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header dengan Status -->
+        <div class="header">
+            <div class="logo-area">
+                <div class="logo-icon">⚡</div>
+                <div>
+                    <h1 class="title">Game Booster Pro</h1>
+                    <p class="subtitle" id="deviceStatus">Mendeteksi device...</p>
+                </div>
+            </div>
+            <div class="menu-icon" id="menuBtn">⋮</div>
+        </div>
+
+        <!-- Performance Meter -->
+        <div class="performance-card">
+            <div class="performance-header">
+                <span>⚡ Performance Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="boostToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="performance-stats">
+                <div class="stat">
+                    <span class="stat-label">RAM Bebas</span>
+                    <span class="stat-value" id="freeRam">--</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">CPU</span>
+                    <span class="stat-value" id="cpuUsage">--</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Suhu</span>
+                    <span class="stat-value" id="temperature">--</span>
+                </div>
+            </div>
+            <button class="boost-btn" id="quickBoostBtn">
+                <span class="btn-icon">🚀</span>
+                <span class="btn-text">BOOST NOW</span>
+            </button>
+        </div>
+
+        <!-- Game Grid Section -->
+        <div class="game-section">
+            <div class="section-header">
+                <h3>🎮 Game Terinstall</h3>
+                <span class="game-count" id="gameCount">0 game</span>
+            </div>
+            
+            <div class="game-grid" id="gameGrid">
+                <!-- Game items akan diisi oleh JavaScript -->
+                <div class="loading-games">Memindai game...</div>
+            </div>
+        </div>
+
+        <!-- Fitur Booster -->
+        <div class="features-card">
+            <div class="feature-item">
+                <div class="feature-icon">🔕</div>
+                <div class="feature-text">
+                    <span>Mode DND</span>
+                    <small>Blok notifikasi saat main</small>
+                </div>
+                <label class="switch small">
+                    <input type="checkbox" id="dndMode">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📱</div>
+                <div class="feature-text">
+                    <span>Clear Memory</span>
+                    <small>Bersihkan RAM otomatis</small>
+                </div>
+                <label class="switch small">
+                    <input type="checkbox" id="autoClear" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-tab="games">
+                <span class="nav-icon">🎮</span>
+                <span>Games</span>
+            </div>
+            <div class="nav-item" data-tab="boost">
+                <span class="nav-icon">⚡</span>
+                <span>Boost</span>
+            </div>
+            <div class="nav-item" data-tab="settings">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Modal -->
+    <div class="modal" id="menuModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Menu</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="menu-item" id="scanGames">
+                    <span class="menu-icon">🔄</span>
+                    <span>Scan Ulang Game</span>
+                </div>
+                <div class="menu-item" id="clearAllCache">
+                    <span class="menu-icon">🗑️</span>
+                    <span>Bersihkan Cache</span>
+                </div>
+                <div class="menu-item" id="aboutApp">
+                    <span class="menu-icon">ℹ️</span>
+                    <span>Tentang Aplikasi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+  </html>
