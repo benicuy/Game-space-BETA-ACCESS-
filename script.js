@@ -35,14 +35,14 @@ const GAMES = [
         package: "com.miHoYo.GenshinImpact",
         uri: "genshinimpact://",
         category: "RPG",
-        image: ""
+        image: "https://cdn.phototourl.com/uploads/2026-02-21-c26d3ddc-60c2-44cc-b737-f28ecb6160aa.jpg"
     },
     {
         name: "Call of Duty",
         package: "com.activision.callofduty.shooter",
         uri: "codm://",
         category: "FPS",
-        image: ""
+        image: "https://cdn.phototourl.com/uploads/2026-02-21-6ba28fe6-29a9-4b99-abd8-745d2e4e1110.png"
     },
     {
         name: "FIFA Mobile",
